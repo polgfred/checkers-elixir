@@ -32,11 +32,9 @@ defmodule Checkers do
 
     def playable?(x, y), do: rem(x + y, 2) == 0
 
-    def in_bounds?(x, y, nx, ny) do
-      (x in @range) && (y in @range) && (nx in @range) && (ny in @range)
-    end
+    def in_bounds?(x, y, nx, ny), do: (x in @range) && (y in @range) && (nx in @range) && (ny in @range)
 
-    def is_jump?(x, y, nx, ny), do: (abs(nx - x) == 2) && (abs(ny - y) == 2)
+    def jump?(x, y, nx, ny), do: (abs(nx - x) == 2) && (abs(ny - y) == 2)
 
     def promoted?(_nx, ny, p), do: (p == +1 && ny == @size - 1) || (p == -1 && ny == 0)
 
@@ -64,7 +62,7 @@ defmodule Checkers do
     end
 
     def do_jump(b, s, x, y, nx, ny) do
-      if in_bounds?(x, y, nx, ny) && is_jump?(x, y, nx, ny) do
+      if in_bounds?(x, y, nx, ny) && jump?(x, y, nx, ny) do
         mx = div(x + nx, 2)
         my = div(y + ny, 2)
 
