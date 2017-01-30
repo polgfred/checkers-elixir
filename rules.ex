@@ -26,7 +26,7 @@ defmodule Checkers do
 
     def mine?(s, p), do: my_piece?(s, p) || my_king?(s, p)
 
-    def opp?(s, p), do: mine?(s, -p)
+    def opp?(s, p), do: mine?(-s, p)
 
     def open?(p), do: p == 0
 
