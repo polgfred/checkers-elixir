@@ -123,6 +123,20 @@ defmodule Checkers do
           moves = moves_from(b, s, x, y), do: moves
     end
 
+    def do_play(b, s, x, y, nx, ny) do
+      if jump?(x, y, nx, ny) do
+        do_jump(b, s, x, y, nx, ny)
+      else
+        do_move(b, s, x, y, nx, ny)
+      end
+    end
+
+    def do_plays(b, s, [{x, y} | [{nx, ny} | _] = more]) do
+      with nb = do_play(b, s, x, y, nx, ny) do
+        if length(more) > 1, do: do_plays(nb, s, more), else: nb
+      end
+    end
+
     def my_plays(b, s) do
       with jumps = my_jumps(b, s) do
         if length(jumps) > 0, do: jumps, else: my_moves(b, s)
