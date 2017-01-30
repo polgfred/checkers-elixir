@@ -16,9 +16,9 @@ defmodule Checkers do
       }
     end
 
-    def get_p(b, x, y), do: elem(elem(b, y), x)
+    def get_p(b, x, y), do: b |> elem(y) |> elem(x)
 
-    def set_p(b, x, y, p), do: put_elem(b, y, put_elem(elem(b, y), x, p))
+    def set_p(b, x, y, p), do: put_elem(b, y, b |> elem(y) |> put_elem(x, p))
 
     def my_piece?(s, p), do: p == s
 
