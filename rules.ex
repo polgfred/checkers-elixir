@@ -66,14 +66,14 @@ defmodule Checkers do
 
     def do_jump(b, s, x, y, nx, ny) do
       if in_bounds?(x, y, nx, ny) && jump?(x, y, nx, ny) do
-        with mx = div(x + nx, 2),
-             my = div(y + ny, 2) do
-          if opp?(s, get_p(b, mx, my)) && open?(get_p(b, nx, ny)) do
-            b
-            |> set_p(x, y, 0)
-            |> set_p(mx, my, 0)
-            |> set_p(nx, ny, promote(nx, ny, get_p(b, x, y)))
-          end
+        mx = div(x + nx, 2)
+        my = div(y + ny, 2)
+
+        if opp?(s, get_p(b, mx, my)) && open?(get_p(b, nx, ny)) do
+          b
+          |> set_p(x, y, 0)
+          |> set_p(mx, my, 0)
+          |> set_p(nx, ny, promote(nx, ny, get_p(b, x, y)))
         end
       end
     end
@@ -87,9 +87,9 @@ defmodule Checkers do
     end
 
     def jumps_from(b, s, x, y) do
-      with jumps = collect_jumps(b, s, x, y, get_p(b, x, y)) do
-        if length(jumps) > 0, do: [{x, y} | jumps]
-      end
+      jumps = collect_jumps(b, s, x, y, get_p(b, x, y))
+
+      if length(jumps) > 0, do: [{x, y} | jumps]
     end
 
     def my_jumps(b, s) do
@@ -113,9 +113,9 @@ defmodule Checkers do
     end
 
     def moves_from(b, s, x, y) do
-      with moves = collect_moves(b, s, x, y, get_p(b, x, y)) do
-        if length(moves) > 0, do: [{x, y} | moves]
-      end
+      moves = collect_moves(b, s, x, y, get_p(b, x, y))
+
+      if length(moves) > 0, do: [{x, y} | moves]
     end
 
     def my_moves(b, s) do
@@ -132,15 +132,15 @@ defmodule Checkers do
     end
 
     def do_plays(b, s, [{x, y} | [{nx, ny} | _] = more]) do
-      with nb = do_play(b, s, x, y, nx, ny) do
-        if length(more) > 1, do: do_plays(nb, s, more), else: nb
-      end
+      nb = do_play(b, s, x, y, nx, ny)
+
+      if length(more) > 1, do: do_plays(nb, s, more), else: nb
     end
 
     def my_plays(b, s) do
-      with jumps = my_jumps(b, s) do
-        if length(jumps) > 0, do: jumps, else: my_moves(b, s)
-      end
+      jumps = my_jumps(b, s)
+
+      if length(jumps) > 0, do: jumps, else: my_moves(b, s)
     end
   end
 end

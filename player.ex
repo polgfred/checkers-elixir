@@ -55,7 +55,8 @@ defmodule Checkers do
 
     def calculate_score_recursive(b, s, v) do
       if (v > 0) || (length(my_jumps(b, -s)) > 0) do
-        with {score, _} = best_play(b, -s, v - 1), do: score
+        {score, _} = best_play(b, -s, v - 1)
+        score
       else
         calculate_score(b)
       end
@@ -63,37 +64,31 @@ defmodule Checkers do
 
     def compare_plays(+1, plays) do
       Enum.max_by plays,
-        fn ({score, play}) -> +score end,
+        fn ({score, _}) -> +score end,
         fn () -> {-2147483648, nil} end
     end
 
     def compare_plays(-1, plays) do
       Enum.max_by plays,
-        fn ({score, play}) -> -score end,
+        fn ({score, _}) -> -score end,
         fn () -> {+2147483648, nil} end
     end
 
-    def best_play_from(b, s, v, acc, tree) do
-      with [{x, y} | more] = tree do
-        if length(more) == 0 do
-          {calculate_score_recursive(b, s, v), :lists.reverse(acc)}
-        else
-          plays = for tree <- more do
-            with [{nx, ny} | _] = tree,
-                 nb = do_play(b, s, x, y, nx, ny),
-              do: best_play_from(nb, s, v, [{nx, ny} | acc], tree)
-          end
+    def best_play_from(b, s, v, acc, [_]) do
+      {calculate_score_recursive(b, s, v), :lists.reverse(acc)}
+    end
 
-          compare_plays(s, plays)
-        end
-      end
+    def best_play_from(b, s, v, acc, [{x, y} | more]) do
+      plays = for [{nx, ny} | _] = tree <- more,
+                  nb = do_play(b, s, x, y, nx, ny),
+                do: best_play_from(nb, s, v, [{nx, ny} | acc], tree)
+
+      compare_plays(s, plays)
     end
 
     def best_play(b, s, v \\ @depth) do
-      plays = for tree <- my_plays(b, s) do
-        with [{x, y} | _] = tree,
-          do: best_play_from(b, s, v, [{x, y}], tree)
-      end
+      plays = for [{x, y} | _] = tree <- my_plays(b, s),
+                do: best_play_from(b, s, v, [{x, y}], tree)
 
       compare_plays(s, plays)
     end
