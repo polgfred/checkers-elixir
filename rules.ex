@@ -142,5 +142,28 @@ defmodule Checkers do
 
       if length(jumps) > 0, do: jumps, else: my_moves(b, s)
     end
+
+    def dump!(b) do
+      for {y, r} <- :lists.reverse(Enum.zip(0..7, Tuple.to_list(b))) do
+        IO.write(y)
+        IO.write(" ")
+        for {x, p} <- Enum.zip(0..7, Tuple.to_list(r)) do
+          if playable?(x, y) do
+            case p do
+              +1 -> IO.write("b ")
+              +2 -> IO.write("B ")
+              -1 -> IO.write("r ")
+              -2 -> IO.write("R ")
+               _ -> IO.write("_ ")
+            end
+          else
+            IO.write("  ")
+          end
+        end
+        IO.write("\n")
+      end
+      IO.write("  0 1 2 3 4 5 6 7\n\n")
+    end
+    nil
   end
 end
