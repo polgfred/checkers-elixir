@@ -39,6 +39,18 @@ defmodule Checkers do
 
     @kr_vals @kb_vals
 
+    def compare_plays(+1, plays) do
+      Enum.max_by plays,
+        fn ({score, _}) -> +score end,
+        fn () -> {-2147483648, nil} end
+    end
+
+    def compare_plays(-1, plays) do
+      Enum.max_by plays,
+        fn ({score, _}) -> -score end,
+        fn () -> {+2147483648, nil} end
+    end
+
     def calculate_score(b) do
       vals = for {x, y, p} <- squares(b) do
         case p do
@@ -60,18 +72,6 @@ defmodule Checkers do
       else
         calculate_score(b)
       end
-    end
-
-    def compare_plays(+1, plays) do
-      Enum.max_by plays,
-        fn ({score, _}) -> +score end,
-        fn () -> {-2147483648, nil} end
-    end
-
-    def compare_plays(-1, plays) do
-      Enum.max_by plays,
-        fn ({score, _}) -> -score end,
-        fn () -> {+2147483648, nil} end
     end
 
     def best_play_from(b, s, v, acc, [_]) do
