@@ -45,8 +45,8 @@ defmodule Checkers do
     def best_play_of(-1, plays), do: Enum.min_by(plays, fn ({score, _}) -> score end)
 
     def calculate_score(b) do
-      vals = for {x, y, p} <- squares(b) do
-        case p do
+      Enum.reduce squares(b), 0, fn ({x, y, p}, score) ->
+        score + case p do
           +1 -> get_p(@pb_vals, x, y)
           -1 -> get_p(@pr_vals, x, y)
           +2 -> get_p(@kb_vals, x, y)
@@ -54,11 +54,9 @@ defmodule Checkers do
            _ -> 0
         end
       end
-
-      :lists.sum(vals)
     end
 
-    def calculate_score_recursive(b, s, v) do
+    def find_score(b, s, v) do
       if (v > 0) || (length(my_jumps(b, -s)) > 0) do
         {score, _} = best_play(b, -s, v - 1)
         score
@@ -68,7 +66,7 @@ defmodule Checkers do
     end
 
     def best_play_from(b, s, v, acc, [_]) do
-      {calculate_score_recursive(b, s, v), :lists.reverse(acc)}
+      {find_score(b, s, v), :lists.reverse(acc)}
     end
 
     def best_play_from(b, s, v, acc, [{x, y} | more]) do
