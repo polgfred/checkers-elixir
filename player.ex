@@ -4,7 +4,7 @@ defmodule Checkers do
 
     @depth 5
 
-    @pb_vals {
+    @pvals {
       { 100,   0, 104,   0, 104,   0, 100,   0 },
       {   0, 100,   0, 102,   0, 102,   0, 100 },
       { 102,   0, 105,   0, 105,   0, 102,   0 },
@@ -15,18 +15,7 @@ defmodule Checkers do
       {   0,   0,   0,   0,   0,   0,   0,   0 }
     }
 
-    @pr_vals {
-      {   0,   0,   0,   0,   0,   0,   0,   0 },
-      {   0, 130,   0, 142,   0, 142,   0, 130 },
-      { 120,   0, 130,   0, 130,   0, 120,   0 },
-      {   0, 110,   0, 120,   0, 120,   0, 110 },
-      { 105,   0, 110,   0, 110,   0, 105,   0 },
-      {   0, 102,   0, 105,   0, 105,   0, 102 },
-      { 100,   0, 102,   0, 102,   0, 100,   0 },
-      {   0, 100,   0, 104,   0, 104,   0, 100 }
-    }
-
-    @kb_vals {
+    @kvals {
       { 152,   0, 152,   0, 152,   0, 164,   0 },
       {   0, 164,   0, 164,   0, 164,   0, 164 },
       { 152,   0, 180,   0, 180,   0, 164,   0 },
@@ -37,8 +26,6 @@ defmodule Checkers do
       {   0, 164,   0, 152,   0, 152,   0, 152 }
     }
 
-    @kr_vals @kb_vals
-
     def best_play_of(+1, []), do: {-2147483648, nil}
     def best_play_of(-1, []), do: {+2147483648, nil}
     def best_play_of(+1, plays), do: Enum.max_by(plays, fn ({score, _}) -> score end)
@@ -47,10 +34,10 @@ defmodule Checkers do
     def calculate_score(b) do
       Enum.reduce squares(b), 0, fn ({x, y, p}, score) ->
         score + case p do
-          +1 -> get_p(@pb_vals, x, y)
-          -1 -> get_p(@pr_vals, x, y)
-          +2 -> get_p(@kb_vals, x, y)
-          -2 -> get_p(@kr_vals, x, y)
+          +1 -> +get_p(@pvals, x, y)
+          -1 -> -get_p(@pvals, 7 - x, 7 - y)
+          +2 -> +get_p(@kvals, x, y)
+          -2 -> -get_p(@kvals, 7 - x, 7 - y)
            _ -> 0
         end
       end
