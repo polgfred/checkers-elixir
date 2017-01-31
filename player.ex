@@ -39,17 +39,10 @@ defmodule Checkers do
 
     @kr_vals @kb_vals
 
-    def compare_plays(+1, plays) do
-      Enum.max_by plays,
-        fn ({score, _}) -> +score end,
-        fn () -> {-2147483648, nil} end
-    end
-
-    def compare_plays(-1, plays) do
-      Enum.max_by plays,
-        fn ({score, _}) -> -score end,
-        fn () -> {+2147483648, nil} end
-    end
+    def best_play_of(+1, []), do: {-2147483648, nil}
+    def best_play_of(-1, []), do: {+2147483648, nil}
+    def best_play_of(+1, plays), do: Enum.max_by(plays, fn ({score, _}) -> score end)
+    def best_play_of(-1, plays), do: Enum.min_by(plays, fn ({score, _}) -> score end)
 
     def calculate_score(b) do
       vals = for {x, y, p} <- squares(b) do
@@ -83,14 +76,14 @@ defmodule Checkers do
                   nb = do_play(b, s, x, y, nx, ny),
                 do: best_play_from(nb, s, v, [{nx, ny} | acc], tree)
 
-      compare_plays(s, plays)
+      best_play_of(s, plays)
     end
 
     def best_play(b, s, v \\ @depth) do
       plays = for [{x, y} | _] = tree <- my_plays(b, s),
                 do: best_play_from(b, s, v, [{x, y}], tree)
 
-      compare_plays(s, plays)
+      best_play_of(s, plays)
     end
   end
 end
