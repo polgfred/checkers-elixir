@@ -48,11 +48,14 @@ defmodule Checkers do
     def squares(b) do
       for x <- @range,
           y <- @range,
-          playable?(x, y), do: {x, y, get_p(b, x, y)}
+          playable?(x, y),
+        do: {x, y, get_p(b, x, y)}
     end
 
     def my_squares(b, s) do
-      for {x, y, p} <- squares(b), mine?(s, p), do: {x, y, p}
+      for {x, y, p} <- squares(b),
+          mine?(s, p),
+        do: {x, y, p}
     end
 
     def directions(p) do
@@ -83,18 +86,21 @@ defmodule Checkers do
           nx = x + 2 * dx,
           ny = y + 2 * dy,
           nb = do_jump(b, s, x, y, nx, ny),
-          jumps = collect_jumps(nb, s, nx, ny, p), do: [{nx, ny} | jumps]
+          jumps = collect_jumps(nb, s, nx, ny, p),
+        do: [{nx, ny} | jumps]
     end
 
     def jumps_from(b, s, x, y) do
-      jumps = collect_jumps(b, s, x, y, get_p(b, x, y))
-
-      if length(jumps) > 0, do: [{x, y} | jumps]
+      case collect_jumps(b, s, x, y, get_p(b, x, y)) do
+        [] -> nil
+        jumps -> [{x, y} | jumps]
+      end
     end
 
     def my_jumps(b, s) do
       for {x, y, _} <- my_squares(b, s),
-          jumps = jumps_from(b, s, x, y), do: jumps
+          jumps = jumps_from(b, s, x, y),
+        do: jumps
     end
 
     def do_move(b, _s, x, y, nx, ny) do
@@ -109,18 +115,21 @@ defmodule Checkers do
       for {dx, dy} <- directions(p),
           nx = x + dx,
           ny = y + dy,
-          do_move(b, s, x, y, nx, ny), do: [{nx, ny}]
+          do_move(b, s, x, y, nx, ny),
+        do: [{nx, ny}]
     end
 
     def moves_from(b, s, x, y) do
-      moves = collect_moves(b, s, x, y, get_p(b, x, y))
-
-      if length(moves) > 0, do: [{x, y} | moves]
+      case collect_moves(b, s, x, y, get_p(b, x, y)) do
+        [] -> nil
+        moves -> [{x, y} | moves]
+      end
     end
 
     def my_moves(b, s) do
       for {x, y, _} <- my_squares(b, s),
-          moves = moves_from(b, s, x, y), do: moves
+          moves = moves_from(b, s, x, y),
+        do: moves
     end
 
     def do_play(b, s, x, y, nx, ny) do
@@ -131,16 +140,21 @@ defmodule Checkers do
       end
     end
 
-    def do_plays(b, s, [{x, y} | [{nx, ny} | _] = more]) do
-      nb = do_play(b, s, x, y, nx, ny)
+    def do_plays(b, s, [{x, y}, {nx, ny}]) do
+      do_play(b, s, x, y, nx, ny)
+    end
 
-      if length(more) > 1, do: do_plays(nb, s, more), else: nb
+    def do_plays(b, s, [{x, y}, {nx, ny} | more]) do
+      b
+      |> do_play(s, x, y, nx, ny)
+      |> do_plays(s, [{nx, ny} | more])
     end
 
     def my_plays(b, s) do
-      jumps = my_jumps(b, s)
-
-      if length(jumps) > 0, do: jumps, else: my_moves(b, s)
+      case my_jumps(b, s) do
+        [] -> my_moves(b, s)
+        jumps -> jumps
+      end
     end
 
     def dump!(b) do
